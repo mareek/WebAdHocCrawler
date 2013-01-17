@@ -1,0 +1,17 @@
+﻿<Window x:Class="WebAdHocCrawler.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Button x:Name="LaunchButton" Click="LaunchButton_Click">
+            <Viewbox>
+                <Label>Launch !</Label>
+            </Viewbox>
+        </Button>
+        <TextBox x:Name="ResultTextBox" Grid.Row="1" VerticalScrollBarVisibility="Auto"/>
+    </Grid>
+</Window>
