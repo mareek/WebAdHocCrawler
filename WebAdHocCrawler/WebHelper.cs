@@ -12,7 +12,7 @@ namespace WebAdHocCrawler
     {
         public static async Task<HtmlDocument> DownloadPageAsync(string url)
         {
-            var webClient = new WebClient();
+            var webClient = new WebClient { Encoding = Encoding.UTF8 };
             var result = new HtmlDocument();
             
             result.LoadHtml(await webClient.DownloadStringTaskAsync(url));
