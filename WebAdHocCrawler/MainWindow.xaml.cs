@@ -28,7 +28,19 @@ namespace WebAdHocCrawler
 
         private void LaunchButton_Click(object sender, RoutedEventArgs e)
         {
-            GetAuthorsFromFeedBooks();
+            GetMsdnIssues();
+        }
+
+        private async void GetMsdnIssues()
+        {
+            EnterWaitMode();
+
+            var issues = from issue in await MsdnMagazine.MsdnIssue.GetAllIssues()
+                         select issue.Title + " " + issue.Year.ToString();
+
+            this.ResultTextBox.Text = string.Join("\n", issues);
+
+            ExitWaitMode();
         }
 
         private async void GetAuthorsFromFeedBooks()

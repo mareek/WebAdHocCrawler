@@ -57,6 +57,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="FeedBookHelper.cs" />
+    <Compile Include="MsdnMagazine\MsdnArticle.cs" />
+    <Compile Include="MsdnMagazine\MsdnIssue.cs" />
     <Compile Include="WebHelper.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
