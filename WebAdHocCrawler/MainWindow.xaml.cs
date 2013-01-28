@@ -28,25 +28,33 @@ namespace WebAdHocCrawler
 
         private void LaunchButton_Click(object sender, RoutedEventArgs e)
         {
-            GetMsdnIssues();
+            if (this.UrlTextBox.Text.Any())
+            {
+                LaunchLongRunningOperation(DownloadPage);
+            }
+            else
+            {
+                LaunchLongRunningOperation(GetMsdnIssues);
+            }
         }
 
-        private async void GetMsdnIssues()
+        private async Task DownloadPage()
         {
-            EnterWaitMode();
+            var url = this.UrlTextBox.Text;
+            var page = await WebHelper.DownloadPageAsync(url);
+            this.ResultTextBox.Text = page.DocumentNode.OuterHtml;
+        }
 
+        private async Task GetMsdnIssues()
+        {
             var issues = from issue in await MsdnMagazine.MsdnIssue.GetAllIssues()
                          select issue.Title + " " + issue.Year.ToString();
 
             this.ResultTextBox.Text = string.Join("\n", issues);
-
-            ExitWaitMode();
         }
 
-        private async void GetAuthorsFromFeedBooks()
+        private async Task GetAuthorsFromFeedBooks()
         {
-            EnterWaitMode();
-
             var urls = new[] { "http://fr.feedbooks.com/list/8301/", "http://fr.feedbooks.com/list/8302/", "http://fr.feedbooks.com/list/8303/", };
 
             this.ResultTextBox.Text = "";
@@ -54,23 +62,21 @@ namespace WebAdHocCrawler
             {
                 this.ResultTextBox.Text += await FeedBookHelper.GetAuthorsWithBooks(url) + "\r\n\r\n";
             }
-
-
-            ExitWaitMode();
         }
-        private void EnterWaitMode()
+
+        private async void LaunchLongRunningOperation(Func<Task> longRunningOperation)
         {
             SetIsEnabled(false);
-        }
 
-        private void ExitWaitMode()
-        {
+            await longRunningOperation();
+
             SetIsEnabled(true);
         }
 
         private void SetIsEnabled(bool enabled)
         {
             this.LaunchButton.IsEnabled = enabled;
+            this.UrlTextBox.IsEnabled = enabled;
             this.ResultTextBox.IsEnabled = enabled;
         }
     }
