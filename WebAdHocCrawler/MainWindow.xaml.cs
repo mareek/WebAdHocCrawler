@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using HtmlAgilityPack;
+using WebAdHocCrawler.MsdnMagazine;
 
 namespace WebAdHocCrawler
 {
@@ -34,8 +35,15 @@ namespace WebAdHocCrawler
             }
             else
             {
-                LaunchLongRunningOperation(GetMsdnIssues);
+                LaunchLongRunningOperation(TinkerWithMsdn);
             }
+        }
+
+        private async Task TinkerWithMsdn()
+        {
+            var issue = new MsdnIssue(2013, "Janvier", new System.IO.FileInfo(@"C:\Users\Matthieu\Desktop\Raw msdn magasine.html"));
+            var articles = await issue.Tinker();
+            this.ResultTextBox.Text = string.Join("\n", articles);
         }
 
         private async Task DownloadPage()

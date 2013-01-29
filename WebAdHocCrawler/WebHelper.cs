@@ -10,7 +10,12 @@ namespace WebAdHocCrawler
 {
     static class WebHelper
     {
-        public static async Task<HtmlDocument> DownloadPageAsync(string url)
+        public static Task<HtmlDocument> DownloadPageAsync(string url)
+        {
+            return DownloadPageAsync(new Uri(url));
+        }
+
+        public static async Task<HtmlDocument> DownloadPageAsync(Uri url)
         {
             var webClient = new WebClient { Encoding = Encoding.UTF8 };
             var result = new HtmlDocument();
