@@ -41,7 +41,7 @@ namespace WebAdHocCrawler
 
         private async Task TinkerWithMsdn()
         {
-            var issue = new MsdnIssue(2013, "Janvier", new System.IO.FileInfo(@"C:\Users\Matthieu\Desktop\Raw msdn magasine.html"));
+            var issue = (await MsdnIssue.GetAllIssues()).First();
             var articles = await issue.Tinker();
             this.ResultTextBox.Text = string.Join("\n", articles);
         }

@@ -61,19 +61,24 @@ namespace WebAdHocCrawler.MsdnMagazine
         public async Task<IEnumerable<string>> Tinker()
         {
             await LoadDocument();
-
-            return from link in htmlDoc.DocumentNode.Descendants("a")
-                   let linkTarget = link.GetAttributeValue("href", "")
-                   where linkTarget.StartsWith("jj")
-                         && !link.Descendants("a").Any()
-                         && !string.IsNullOrWhiteSpace(link.InnerText)
-                   select string.Format("Titre : [{0}]  - Adresse : {1}", link.InnerText, linkTarget);
+            
+            return from authorlink in htmlDoc.DocumentNode.Descendants("a")
+                   where authorlink.GetAttributeValue("href", "").StartsWith("/magazine/ee")
+                   select new MsdnArticle(_url, authorlink.ParentNode) into article
+                   select article.Label;
         }
+
         public async Task<IEnumerable<MsdnArticle>> GetArticles()
         {
             await LoadDocument();
-            //http://msdn.microsoft.com/en-us/magazine/jj883955.aspx
-            throw new NotImplementedException("TODO");
+
+            Func<HtmlNode, Uri> generateLink = link => new Uri(_url, link.GetAttributeValue("href", ""));
+
+            return from authorlink in htmlDoc.DocumentNode.Descendants("a")
+                   where authorlink.GetAttributeValue("href", "").StartsWith("/magazine/ee")
+                   let articleBlock = authorlink.ParentNode
+                   let articleLink = articleBlock.Descendants("a").Where(l => l.GetAttributeValue("href", "").StartsWith("jj")).Last()
+                   select new MsdnArticle(articleLink.InnerText, generateLink(articleLink), authorlink.InnerText, "");
         }
 
         private async Task LoadDocument()
