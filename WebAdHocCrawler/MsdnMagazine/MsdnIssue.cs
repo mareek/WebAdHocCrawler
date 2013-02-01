@@ -60,12 +60,7 @@ namespace WebAdHocCrawler.MsdnMagazine
 
         public async Task<IEnumerable<string>> Tinker()
         {
-            await LoadDocument();
-            
-            return from authorlink in htmlDoc.DocumentNode.Descendants("a")
-                   where authorlink.GetAttributeValue("href", "").StartsWith("/magazine/ee")
-                   select new MsdnArticle(_url, authorlink.ParentNode) into article
-                   select article.Label;
+            return (await GetArticles()).Select(article => article.Label);
         }
 
         public async Task<IEnumerable<MsdnArticle>> GetArticles()
@@ -74,11 +69,12 @@ namespace WebAdHocCrawler.MsdnMagazine
 
             Func<HtmlNode, Uri> generateLink = link => new Uri(_url, link.GetAttributeValue("href", ""));
 
-            return from authorlink in htmlDoc.DocumentNode.Descendants("a")
-                   where authorlink.GetAttributeValue("href", "").StartsWith("/magazine/ee")
-                   let articleBlock = authorlink.ParentNode
-                   let articleLink = articleBlock.Descendants("a").Where(l => l.GetAttributeValue("href", "").StartsWith("jj")).Last()
-                   select new MsdnArticle(articleLink.InnerText, generateLink(articleLink), authorlink.InnerText, "");
+            var articleNodes = from authorlink in htmlDoc.DocumentNode.Descendants("a")
+                               where authorlink.GetAttributeValue("href", "").StartsWith("/magazine/ee")
+                               select authorlink.ParentNode;
+
+            return from articleNode in articleNodes.Distinct()
+                   select new MsdnArticle(_url, articleNode);
         }
 
         private async Task LoadDocument()

@@ -14,7 +14,7 @@ namespace WebAdHocCrawler.MsdnMagazine
         public string Column { get; private set; }
         private readonly Uri _url;
 
-        public string Label { get { return string.Format("{0} : {1} [{2}]", Author, Title, _url); ; } }
+        public string Label { get { return string.Format("{0} : {1} by {2}     [{3}]", Column, Title, Author, _url); ; } }
 
         public MsdnArticle(string title, Uri url, string author, string column)
         {
@@ -31,10 +31,11 @@ namespace WebAdHocCrawler.MsdnMagazine
             var articleLink = links.Where(l => l.GetAttributeValue("href", "").StartsWith("jj")).Last();
             var columnLink = links.Where(l => l.GetAttributeValue("href", "").StartsWith("jj") && l.Descendants().OfType<HtmlTextNode>().Any()).First();
 
-            Title = articleLink.Descendants().OfType<HtmlTextNode>().Last().InnerText;
+            Title = articleLink.Descendants().OfType<HtmlTextNode>().Last().InnerText.Trim();
             _url = new Uri(baseUri, articleLink.GetAttributeValue("href", ""));
-            Column = columnLink.Descendants().OfType<HtmlTextNode>().First().InnerText;
-            Author = string.Join(", ", authorlinks.Select(l=>l.InnerText));
+            Column = columnLink.Descendants().OfType<HtmlTextNode>().First().InnerText.Trim();
+            Column = Column.EndsWith(":") ? Column.Substring(0, Column.Length - 1) : Column;
+            Author = string.Join(", ", authorlinks.Select(l => l.InnerText.Trim()));
         }
     }
 }
