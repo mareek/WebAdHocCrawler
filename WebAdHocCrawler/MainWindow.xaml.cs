@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using HtmlAgilityPack;
 using WebAdHocCrawler.MsdnMagazine;
+using System.Web;
+using System.Text.RegularExpressions;
 
 namespace WebAdHocCrawler
 {
@@ -29,13 +31,73 @@ namespace WebAdHocCrawler
 
         private void LaunchButton_Click(object sender, RoutedEventArgs e)
         {
+            //var element = HtmlNode.CreateNode("<div id=\"resultStats\">Environ 1&nbsp;830&nbsp;résultats<nobr>  (0,37&nbsp;secondes)&nbsp;</nobr></div>");
+            //var resultStatsText = HttpUtility.HtmlDecode(element.InnerText);
+            ////Environ 1 830 résultats  (0,37 secondes) 
+            //var pattern = @"^Environ\s*(?<resultats>\d+\s){1,5}\s*résultat*";
+            //var resultStatsRegexp = new Regex(pattern);
+            //var regexpResult = resultStatsRegexp.Match(resultStatsText);
+            //var success = regexpResult.Success;
+            //var numberParts = regexpResult.Groups["resultats"].Captures.OfType<Capture>().Select(c => c.Value);
+            //var strNumber = string.Concat(numberParts.Select(p => p.TrimEnd()));
+            //long result;
+            //var temp = long.TryParse(strNumber, out result) ? result : 0;
+
+            //MessageBox.Show(this, resultStatsText);
+            //return;
+
             if (this.UrlTextBox.Text.Any())
             {
                 LaunchLongRunningOperation(DownloadPage);
             }
             else
             {
-                LaunchLongRunningOperation(TinkerWithMsdn);
+                LaunchLongRunningOperation(ScannGoogleSearch);
+            }
+        }
+
+        private async Task ScannGoogleSearch()
+        {
+            await SearchRange("asus S200E CT{0}H", 100, 300);
+        }
+
+        private async Task SearchRange(string queryToFormat, int rangeStart, int rangeStop)
+        {
+            //https://www.google.com/search?btnG=1&pws=0&q=asus+S200E+CT242H
+            for (var i = rangeStart; i <= rangeStop; i++)
+            {
+                var searchTerm = string.Format(queryToFormat, i);
+                var nbresults = await GoogleResultCount(searchTerm);
+                if (nbresults > 0)
+                    Log(searchTerm + " : " + nbresults.ToString());
+                await Task.Delay(TimeSpan.FromSeconds(0.5));
+            }
+        }
+
+
+        private static readonly Regex resultStatsRegexp = new Regex(@"^About\s*(?<resultats>\d+.){1,5}\s*results*");
+        private static async Task<long> GoogleResultCount(string searchTerm)
+        {
+            var url = "https://www.google.com/search?btnG=1&pws=0&q=" + HttpUtility.UrlEncode(searchTerm);
+
+            var page = await WebHelper.DownloadPageAsync(url);
+
+            //<div id="resultStats">About 385,000 results</div>
+            var resultStatsText = (from div in page.DocumentNode.Descendants("div")
+                                   where div.GetAttributeValue("id", "") == "resultStats"
+                                   select HttpUtility.HtmlDecode(div.InnerText)).First();
+
+            //About 385,000 results
+            var regexpResult = resultStatsRegexp.Match(resultStatsText);
+
+            if (!regexpResult.Success)
+                return 0;
+            else
+            {
+                var numberParts = regexpResult.Groups["resultats"].Captures.OfType<Capture>().Select(c => c.Value);
+                var strNumber = string.Concat(numberParts.Select(p => p.Substring(0, p.Length - 1)));
+                long result;
+                return long.TryParse(strNumber, out result) ? result : 0;
             }
         }
 
@@ -86,6 +148,15 @@ namespace WebAdHocCrawler
             this.LaunchButton.IsEnabled = enabled;
             this.UrlTextBox.IsEnabled = enabled;
             this.ResultTextBox.IsEnabled = enabled;
+        }
+
+        private void Log(string text)
+        {
+            this.Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    this.ResultTextBox.AppendText(text + "\r\n");
+                    this.ResultTextBox.ScrollToEnd();
+                }));
         }
     }
 }

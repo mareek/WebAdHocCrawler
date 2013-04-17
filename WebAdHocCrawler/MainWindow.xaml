@@ -14,6 +14,7 @@
             </Viewbox>
         </Button>
         <TextBox x:Name="UrlTextBox" Grid.Row="1" TextWrapping="NoWrap" />
-        <TextBox x:Name="ResultTextBox" Grid.Row="2" IsReadOnly="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+        <TextBox x:Name="ResultTextBox" Grid.Row="2" IsReadOnly="True"
+                 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
     </Grid>
 </Window>
