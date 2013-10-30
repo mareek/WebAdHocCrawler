@@ -16,5 +16,6 @@
         <TextBox x:Name="UrlTextBox" Grid.Row="1" TextWrapping="NoWrap" />
         <TextBox x:Name="ResultTextBox" Grid.Row="2" IsReadOnly="True"
                  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+        <DataGrid x:Name="ResultDataGrid" Grid.Row="2" AutoGenerateColumns="True" Visibility="Collapsed"/>
     </Grid>
 </Window>

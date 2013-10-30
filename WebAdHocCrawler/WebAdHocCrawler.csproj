@@ -60,6 +60,8 @@
     <Compile Include="FeedBookHelper.cs" />
     <Compile Include="MsdnMagazine\MsdnArticle.cs" />
     <Compile Include="MsdnMagazine\MsdnIssue.cs" />
+    <Compile Include="SteamGame.cs" />
+    <Compile Include="SteamHelper.cs" />
     <Compile Include="WebHelper.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

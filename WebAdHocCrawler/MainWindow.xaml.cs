@@ -52,8 +52,16 @@ namespace WebAdHocCrawler
             }
             else
             {
-                LaunchLongRunningOperation(ScannGoogleSearch);
+                LaunchLongRunningOperation(GetSteamHalowwenSales);
             }
+        }
+
+        private async Task GetSteamHalowwenSales()
+        {
+            var steamGames = (await SteamHelper.GetHaloweenGames()).ToList();
+            ResultDataGrid.ItemsSource = steamGames;
+            ResultTextBox.Visibility = Visibility.Collapsed;
+            ResultDataGrid.Visibility = Visibility.Visible;
         }
 
         private async Task ScannGoogleSearch()
@@ -113,6 +121,8 @@ namespace WebAdHocCrawler
             var url = this.UrlTextBox.Text;
             var page = await WebHelper.DownloadPageAsync(url);
             this.ResultTextBox.Text = page.DocumentNode.OuterHtml;
+            ResultTextBox.Visibility = Visibility.Visible;
+            ResultDataGrid.Visibility = Visibility.Collapsed;
         }
 
         private async Task GetMsdnIssues()
