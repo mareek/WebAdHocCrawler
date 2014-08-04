@@ -31,29 +31,27 @@ namespace WebAdHocCrawler
 
         private void LaunchButton_Click(object sender, RoutedEventArgs e)
         {
-            //var element = HtmlNode.CreateNode("<div id=\"resultStats\">Environ 1&nbsp;830&nbsp;résultats<nobr>  (0,37&nbsp;secondes)&nbsp;</nobr></div>");
-            //var resultStatsText = HttpUtility.HtmlDecode(element.InnerText);
-            ////Environ 1 830 résultats  (0,37 secondes) 
-            //var pattern = @"^Environ\s*(?<resultats>\d+\s){1,5}\s*résultat*";
-            //var resultStatsRegexp = new Regex(pattern);
-            //var regexpResult = resultStatsRegexp.Match(resultStatsText);
-            //var success = regexpResult.Success;
-            //var numberParts = regexpResult.Groups["resultats"].Captures.OfType<Capture>().Select(c => c.Value);
-            //var strNumber = string.Concat(numberParts.Select(p => p.TrimEnd()));
-            //long result;
-            //var temp = long.TryParse(strNumber, out result) ? result : 0;
-
-            //MessageBox.Show(this, resultStatsText);
-            //return;
-
             if (this.UrlTextBox.Text.Any())
             {
                 LaunchLongRunningOperation(DownloadPage);
             }
             else
             {
-                LaunchLongRunningOperation(GetSteamHalowwenSales);
+                LaunchLongRunningOperation(DownloadMeteoRadarImages);
             }
+        }
+
+        private async Task GetMeteoRadarImages()
+        {
+            var radarImages = (await MeteoFranceHelper.GetLasRadarImagesInfos()).ToList();
+            ResultDataGrid.ItemsSource = radarImages;
+            ResultTextBox.Visibility = Visibility.Collapsed;
+            ResultDataGrid.Visibility = Visibility.Visible;
+        }
+
+        private async Task DownloadMeteoRadarImages()
+        {
+            await MeteoFranceHelper.DownloadLastRadarImages();
         }
 
         private async Task GetSteamHalowwenSales()
