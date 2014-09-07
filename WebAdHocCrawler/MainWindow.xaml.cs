@@ -16,6 +16,7 @@ using HtmlAgilityPack;
 using WebAdHocCrawler.MsdnMagazine;
 using System.Web;
 using System.Text.RegularExpressions;
+using System.Collections.ObjectModel;
 
 namespace WebAdHocCrawler
 {
@@ -37,16 +38,24 @@ namespace WebAdHocCrawler
             }
             else
             {
-                LaunchLongRunningOperation(DownloadMeteoRadarImages);
+                LaunchLongRunningOperation(LoadXkcdTurtleImages);
             }
         }
+
+        private async Task LoadXkcdTurtleImages()
+        {
+            var xkcdImageNames = new ObservableCollection<string>();
+            this.ResultListBox.ItemsSource = xkcdImageNames;
+            ShowListBoxResult();
+            await XkcdTurtleHelper.LoadImageNames(xkcdImageNames);
+        }
+        
 
         private async Task GetMeteoRadarImages()
         {
             var radarImages = (await MeteoFranceHelper.GetLasRadarImagesInfos()).ToList();
             ResultDataGrid.ItemsSource = radarImages;
-            ResultTextBox.Visibility = Visibility.Collapsed;
-            ResultDataGrid.Visibility = Visibility.Visible;
+            ShowDataGridResult();
         }
 
         private async Task DownloadMeteoRadarImages()
@@ -58,8 +67,7 @@ namespace WebAdHocCrawler
         {
             var steamGames = (await SteamHelper.GetHaloweenGames()).ToList();
             ResultDataGrid.ItemsSource = steamGames;
-            ResultTextBox.Visibility = Visibility.Collapsed;
-            ResultDataGrid.Visibility = Visibility.Visible;
+            ShowDataGridResult();
         }
 
         private async Task ScannGoogleSearch()
@@ -119,8 +127,7 @@ namespace WebAdHocCrawler
             var url = this.UrlTextBox.Text;
             var page = await WebHelper.DownloadPageAsync(url);
             this.ResultTextBox.Text = page.DocumentNode.OuterHtml;
-            ResultTextBox.Visibility = Visibility.Visible;
-            ResultDataGrid.Visibility = Visibility.Collapsed;
+            ShowTextBoxResult();
         }
 
         private async Task GetMsdnIssues()
@@ -165,6 +172,27 @@ namespace WebAdHocCrawler
                     this.ResultTextBox.AppendText(text + "\r\n");
                     this.ResultTextBox.ScrollToEnd();
                 }));
+        }
+
+        private void ShowTextBoxResult()
+        {
+            ResultTextBox.Visibility = Visibility.Visible;
+            ResultDataGrid.Visibility = Visibility.Collapsed;
+            ResultListBox.Visibility = Visibility.Collapsed;
+        }
+
+        private void ShowDataGridResult()
+        {
+            ResultTextBox.Visibility = Visibility.Collapsed;
+            ResultDataGrid.Visibility = Visibility.Visible;
+            ResultListBox.Visibility = Visibility.Collapsed;
+        }
+
+        private void ShowListBoxResult()
+        {
+            ResultTextBox.Visibility = Visibility.Collapsed;
+            ResultDataGrid.Visibility = Visibility.Collapsed;
+            ResultListBox.Visibility = Visibility.Visible;
         }
     }
 }

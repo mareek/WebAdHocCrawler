@@ -17,5 +17,6 @@
         <TextBox x:Name="ResultTextBox" Grid.Row="2" IsReadOnly="True"
                  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
         <DataGrid x:Name="ResultDataGrid" Grid.Row="2" AutoGenerateColumns="True" Visibility="Collapsed"/>
+        <ListBox x:Name="ResultListBox" Grid.Row="2" Visibility="Collapsed"/>
     </Grid>
 </Window>

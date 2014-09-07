@@ -65,6 +65,7 @@
     <Compile Include="SteamGame.cs" />
     <Compile Include="SteamHelper.cs" />
     <Compile Include="WebHelper.cs" />
+    <Compile Include="XkcdTurtleHelper.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
